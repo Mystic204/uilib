@@ -2668,11 +2668,11 @@ function elementHandler:Slider(sliderName: string, callback, maximumValue: numbe
             else
                 local percentOfBarFilled = (mouse.X - absPos.X) / absSize.X
                 local rawValue = minimumValue + (maxMinRange * percentOfBarFilled)
-                sliderValue = math.round(rawValue / increment) * increment -- Snap to nearest increment
+                sliderValue = math.floor(rawValue / increment + 0.5) * increment -- Snap to nearest increment
                 sliderBar.Size = UDim2.new((sliderValue - minimumValue) / maxMinRange, 0, 1, 0)
             end
             
-            sliderInstance.TextGrouping.NumberText.Text = math.round(sliderValue)
+            sliderInstance.TextGrouping.NumberText.Text = string.format("%.1f", sliderValue) -- Display to 1 decimal place
             callback(sliderValue)
         end
         
@@ -2691,19 +2691,19 @@ function elementHandler:Slider(sliderName: string, callback, maximumValue: numbe
         if enterPressed then
             local enteredNum = tonumber(sliderInstance.TextGrouping.NumberText.Text)
             if typeof(enteredNum) == "number" and enteredNum >= minimumValue and enteredNum <= maximumValue then
-                sliderValue = math.round(enteredNum / increment) * increment -- Snap to nearest increment
-                sliderInstance.TextGrouping.NumberText.Text = math.round(sliderValue)
+                sliderValue = math.floor(enteredNum / increment + 0.5) * increment -- Snap to nearest increment
+                sliderInstance.TextGrouping.NumberText.Text = string.format("%.1f", sliderValue)
                 sliderBar.Size = UDim2.new((sliderValue - minimumValue) / maxMinRange, 0, 1, 0)
                 callback(sliderValue)
             else
                 sliderInstance.TextGrouping.NumberText.Text = "ERR"
                 task.wait(.5)
                 if sliderInstance.TextGrouping.NumberText.Text == "ERR" then
-                    sliderInstance.TextGrouping.NumberText.Text = math.round(sliderValue)
+                    sliderInstance.TextGrouping.NumberText.Text = string.format("%.1f", sliderValue)
                 end
             end
         else
-            sliderInstance.TextGrouping.NumberText.Text = math.round(sliderValue)
+            sliderInstance.TextGrouping.NumberText.Text = string.format("%.1f", sliderValue)
         end
     end
 
@@ -2720,7 +2720,7 @@ function elementHandler:Slider(sliderName: string, callback, maximumValue: numbe
     sliderInstance.TextGrouping.NumberText.FocusLost:Connect(onFocusLost)
 
     sliderInstance.TextGrouping.SliderText.Text = sliderName or "N/A"
-    sliderInstance.TextGrouping.NumberText.Text = minimumValue
+    sliderInstance.TextGrouping.NumberText.Text = string.format("%.1f", minimumValue) -- Start with formatted minimum value
     sliderInstance.TextGrouping.NumberText.Size = UDim2.new(0, math.max(requiredErrorTextSpace.X, requiredNumberTextSpace.X) + textPixelOffset, 1, 0)
 
     sliderInstance.Parent = self.ElementToParentChildren
