@@ -2619,6 +2619,28 @@ function dropdownHandler:ChangeText(newText: string)
 	self.IdentifierText = newText
 end
 
+function dropdownHandler:RefreshDropdown(newItems: table)
+	-- Clear existing items from dropdown
+	for _, child in pairs(self.ElementToParentChildren:GetChildren()) do
+		child:Destroy()
+	end
+	
+	-- Add new items to the dropdown
+	for _, itemText in ipairs(newItems) do
+		local newItem = originalElements.DropdownItem:Clone() -- assuming DropdownItem is a template for items
+		newItem.Text = itemText
+		newItem.Parent = self.ElementToParentChildren
+	end
+	
+	-- Refresh dropdown appearance by triggering content size update
+	self.ElementToParentChildren.ElementHolderInnerBackgroundList:GetPropertyChangedSignal("AbsoluteContentSize"):Fire()
+	
+	-- Optional: Play open tween again to adjust size
+	if self.IsExpanded then
+		self.Instance.Size = UDim2.new(1, 0, 0, self.Instance.DropdownButton.Size.Y.Offset + self.ElementToParentChildren.ElementHolderInnerBackgroundList.AbsoluteContentSize.Y)
+	end
+end
+
 function elementHandler:Slider(sliderName: string, callback, maximumValue: number, minimumValue: number, increment: number): table
     local slider = setmetatable({}, sliderHandler)
     local sliderInstance = originalElements.Slider:Clone()
